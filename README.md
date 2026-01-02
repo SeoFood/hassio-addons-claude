@@ -4,10 +4,12 @@ A Home Assistant add-on that provides a Claude Code development environment with
 
 ## Features
 
-- 🤖 **Claude Code** - AI-powered development CLI tool
+- 🤖 **Claude Code** - AI-powered development CLI tool with plugin support
+- 🔌 **Plugin Management** - UI-based marketplace and plugin configuration
 - 📋 **Vibe Kanban** - Kanban board on port 3000
-- 🔧 **Complete Dev Environment** - Node.js 24, Git, GitHub CLI, SSH
-- 💾 **Persistent Data** - All configurations and projects are preserved
+- 🔧 **Complete Dev Environment** - Node.js, npm, Git, GitHub CLI, SSH, Bun
+- 💾 **Persistent Data** - All configurations, plugins, and projects are preserved
+- ⚡ **Superpowers Skills** - Pre-configured with brainstorm, write-plan, execute-plan
 
 ## Local Testing with Docker
 
@@ -32,13 +34,23 @@ A Home Assistant add-on that provides a Claude Code development environment with
    docker-compose down
    ```
 
-### Customize Git Configuration
+### Customize Configuration
 
 Edit [test/options.json](test/options.json):
 ```json
 {
   "git_user_name": "Your Name",
-  "git_user_email": "your@email.com"
+  "git_user_email": "your@email.com",
+  "marketplaces": [
+    "anthropics/claude-plugins-official",
+    "obra/superpowers-marketplace"
+  ],
+  "plugins": [
+    "superpowers@superpowers-marketplace",
+    "commit-commands@claude-plugins-official",
+    "frontend-design@claude-plugins-official",
+    "ralph-wiggum@claude-plugins-official"
+  ]
 }
 ```
 
@@ -46,6 +58,17 @@ Then restart the container:
 ```bash
 docker-compose restart
 ```
+
+**Available Marketplaces:**
+- `anthropics/claude-plugins-official` - Official Anthropic plugins
+- `obra/superpowers-marketplace` - Community superpowers skills
+
+**Popular Plugins:**
+- `superpowers@superpowers-marketplace` - Core skills: brainstorm, write-plan, execute-plan
+- `commit-commands@claude-plugins-official` - Git commit helpers
+- `frontend-design@claude-plugins-official` - Frontend development tools
+- `ralph-wiggum@claude-plugins-official` - Custom behavior hooks
+- `security-guidance@claude-plugins-official` - Security analysis
 
 ### SSH Keys for Git Operations
 
@@ -119,12 +142,23 @@ docker exec -it hassio-claude-code-test bash
 
 3. **Configure:**
    - Open "Configuration" tab
-   - Enter Git User Name and Email:
+   - Configure Git settings and plugins:
      ```yaml
      git_user_name: Your Name
      git_user_email: your@email.com
+     marketplaces:
+       - anthropics/claude-plugins-official
+       - obra/superpowers-marketplace
+     plugins:
+       - superpowers@superpowers-marketplace
+       - commit-commands@claude-plugins-official
+       - frontend-design@claude-plugins-official
+       - ralph-wiggum@claude-plugins-official
      ```
    - Click "Save"
+
+   **Note:** Plugins are installed on first container start (may take 30-60 seconds).
+   After that, they're cached and startup is instant.
 
 4. **Start:**
    - Open "Info" tab
