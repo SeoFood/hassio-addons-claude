@@ -2,7 +2,7 @@ ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
 # Cache breaker - change this to force rebuild
-ARG BUILD_VERSION=1.4.5
+ARG BUILD_VERSION=1.4.6
 ENV BUILD_VERSION=${BUILD_VERSION}
 
 # Install system packages and Node.js
@@ -16,6 +16,9 @@ RUN apk add --no-cache \
     jq \
     bash \
     shadow
+
+# Update npm to latest version
+RUN npm install -g npm@latest
 
 # Install GitHub CLI
 RUN apk add --no-cache github-cli --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community
