@@ -57,7 +57,7 @@ if [ -f "$SETTINGS_FILE" ]; then
         echo "$PLUGINS" | while read -r plugin; do
             if [ -n "$plugin" ]; then
                 echo "Installing plugin: $plugin"
-                su claude -c "claude plugin install $plugin --yes" 2>/dev/null || echo "Warning: Failed to install $plugin"
+                su claude -c "HOME=/home/claude npx @anthropic-ai/claude-code plugin install $plugin --yes" || echo "Warning: Failed to install $plugin"
             fi
         done
     fi
