@@ -2,7 +2,7 @@ ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
 # Cache breaker - change this to force rebuild
-ARG BUILD_VERSION=1.4.1
+ARG BUILD_VERSION=1.4.2
 ENV BUILD_VERSION=${BUILD_VERSION}
 
 # Install system packages and Node.js
