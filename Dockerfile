@@ -2,7 +2,7 @@ ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
 # Cache breaker - change this to force rebuild
-ARG BUILD_VERSION=1.4.6
+ARG BUILD_VERSION=1.4.7
 ENV BUILD_VERSION=${BUILD_VERSION}
 
 # Install system packages and Node.js
@@ -15,7 +15,8 @@ RUN apk add --no-cache \
     openssh-client \
     jq \
     bash \
-    shadow
+    shadow \
+    sqlite
 
 # Update npm to latest version
 RUN npm install -g npm@latest
