@@ -47,6 +47,25 @@ export HOST=0.0.0.0
 export PORT=3000
 export GIT_CONFIG_GLOBAL=$DATA_DIR/git-config/config
 
+# Install/Update Claude Code Plugins
+SETTINGS_FILE=$DATA_DIR/claude-config/settings.json
+if [ -f "$SETTINGS_FILE" ]; then
+    echo "Installing/updating Claude Code plugins..."
+    # Extract enabled plugins from settings.json and install them
+    PLUGINS=$(jq -r '.enabledPlugins | to_entries[] | select(.value == true) | .key' "$SETTINGS_FILE" 2>/dev/null)
+    if [ -n "$PLUGINS" ]; then
+        echo "$PLUGINS" | while read -r plugin; do
+            if [ -n "$plugin" ]; then
+                echo "Installing plugin: $plugin"
+                su claude -c "claude plugin install $plugin --yes" 2>/dev/null || echo "Warning: Failed to install $plugin"
+            fi
+        done
+    fi
+    echo "Plugin installation complete."
+else
+    echo "No settings.json found, skipping plugin installation."
+fi
+
 echo "Starting Claude Code Development Environment..."
 echo "Data directory: $DATA_DIR"
 exec su claude -c "npx vibe-kanban"
