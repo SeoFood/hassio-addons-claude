@@ -3,9 +3,10 @@
   "git_user_email": "test@example.com",
   "marketplaces": [
     "anthropics/claude-plugins-official",
-    "superpowers-marketplace/superpowers"
+    "obra/superpowers-marketplace"
   ],
   "plugins": [
+    "superpowers@superpowers-marketplace",
     "commit-commands@claude-plugins-official",
     "frontend-design@claude-plugins-official",
     "ralph-wiggum@claude-plugins-official"
