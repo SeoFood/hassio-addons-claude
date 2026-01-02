@@ -9,9 +9,9 @@ init: false
 homeassistant_api: false
 host_network: true
 ports:
-  3000/tcp: 3000
+  8088/tcp: 8088
 ports_description:
-  3000/tcp: "Vibe Kanban Web Interface"
+  8088/tcp: "Vibe Kanban Web Interface"
 map:
   - config:rw
   - share:rw

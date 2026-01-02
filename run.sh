@@ -47,7 +47,7 @@ fi
 # Environment variables
 export HOME=/home/claude
 export HOST=0.0.0.0
-export PORT=3000
+export PORT=8088
 export GIT_CONFIG_GLOBAL=$DATA_DIR/git-config/config
 
 # Install Claude Code Plugins from Add-on Configuration

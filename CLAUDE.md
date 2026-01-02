@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a **Home Assistant add-on** that provides a Claude Code development environment packaged as a Docker container. The add-on runs `vibe-kanban` (a kanban board tool) on port 3000 and includes a complete Node.js development environment with Claude Code, git, GitHub CLI, and SSH support.
+This is a **Home Assistant add-on** that provides a Claude Code development environment packaged as a Docker container. The add-on runs `vibe-kanban` (a kanban board tool) on port 8088 and includes a complete Node.js development environment with Claude Code, git, GitHub CLI, and SSH support.
 
 ## Architecture
 
@@ -35,12 +35,12 @@ This architecture ensures all user data persists across container restarts and i
 3. **SSH Configuration**: Sets proper permissions (700 for directory, 600 for private keys)
 4. **Symlink Creation**: Links persistent directories to user home locations
 5. **Git Configuration**: Applies user name and email from add-on options
-6. **Service Launch**: Starts vibe-kanban as the `claude` user on 0.0.0.0:3000
+6. **Service Launch**: Starts vibe-kanban as the `claude` user on 0.0.0.0:8088
 
 ### Configuration ([config.yaml](config.yaml))
 
 Home Assistant add-on manifest defining:
-- **Network**: `host_network: true` with port 3000 exposed
+- **Network**: `host_network: true` with port 8088 exposed
 - **Volume Mappings**: `config:rw` and `share:rw` for Home Assistant integration
 - **User Options**: `git_user_name` and `git_user_email` for git configuration
 - **Architecture**: Currently supports `amd64` only
@@ -63,14 +63,14 @@ This add-on is built by Home Assistant's add-on build system. For local developm
 docker build -t hassio-claude-code .
 
 # Run the container locally
-docker run -p 3000:3000 -v ./data:/share/claude-code hassio-claude-code
+docker run -p 8088:8088 -v ./data:/share/claude-code hassio-claude-code
 ```
 
 ### Testing Changes
 
 After modifying [run.sh](run.sh), [Dockerfile](Dockerfile), or [config.yaml](config.yaml):
 1. Rebuild the add-on in Home Assistant or locally
-2. Access the web interface at `http://localhost:3000`
+2. Access the web interface at `http://localhost:8088`
 3. Verify git configuration, SSH access, and vibe-kanban functionality
 
 ### Releasing a New Version
@@ -117,4 +117,4 @@ The startup script automatically sets correct permissions. You can access these 
 - This ensures data persists across container restarts and is accessible from other add-ons
 - Git configuration is applied from Home Assistant options on each startup
 - The add-on uses `host_network: true` mode for network access
-- Port 3000 serves the vibe-kanban web interface
+- Port 8088 serves the vibe-kanban web interface
