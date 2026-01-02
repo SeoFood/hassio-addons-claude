@@ -73,6 +73,30 @@ After modifying [run.sh](run.sh), [Dockerfile](Dockerfile), or [config.yaml](con
 2. Access the web interface at `http://localhost:3000`
 3. Verify git configuration, SSH access, and vibe-kanban functionality
 
+### Releasing a New Version
+
+To release a new version and trigger the GitHub Actions build workflow:
+
+1. **Update the version** in [config.yaml](config.yaml):
+   ```yaml
+   version: "1.x.x"
+   ```
+
+2. **Commit the changes**:
+   ```bash
+   git add config.yaml run.sh  # or other changed files
+   git commit -m "Description of changes (vX.X.X)"
+   git push
+   ```
+
+3. **Create and push a git tag**:
+   ```bash
+   git tag v1.x.x
+   git push origin v1.x.x
+   ```
+
+The GitHub Actions workflow ([.github/workflows/build.yaml](.github/workflows/build.yaml)) automatically triggers on tags matching `v*.*.*` and builds/publishes the Docker image to `ghcr.io/seofood/claude-code`.
+
 ### SSH Key Management
 
 To enable SSH/git operations, SSH keys must be placed in `/share/claude-code/ssh/`:
