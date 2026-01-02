@@ -1,16 +1,16 @@
-version: '3.8'
-
 services:
   claude-code:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        BUILD_FROM: alpine:3.19
     container_name: hassio-claude-code-test
     ports:
       - "3000:3000"
     volumes:
-      # Persistent data - simulates Home Assistant's /data
-      - ./test-data:/data
+      # Persistent data - simulates Home Assistant's /share/claude-code
+      - ./test-data:/share/claude-code
       # Mock Home Assistant configuration
       - ./test/options.json:/data/options.json:ro
     environment:

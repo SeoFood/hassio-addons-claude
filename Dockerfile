@@ -16,12 +16,16 @@ RUN apk add --no-cache \
 # Install GitHub CLI
 RUN apk add --no-cache github-cli --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community
 
+# Install Bun
+RUN curl -fsSL https://bun.sh/install | bash \
+    && ln -s /root/.bun/bin/bun /usr/local/bin/bun
+
 # Create claude user
 RUN adduser -D -s /bin/bash -u 1001 claude \
     && echo "claude ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# Install Node tools
-RUN npm install -g @anthropic-ai/claude-code vibe-kanban
+# Install Node tools and pnpm
+RUN npm install -g @anthropic-ai/claude-code vibe-kanban pnpm
 
 # Create data directories
 RUN mkdir -p /share/claude-code/workspace /share/claude-code/ssh /share/claude-code/claude-config /share/claude-code/vibe-kanban \
