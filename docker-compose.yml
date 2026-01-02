@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        BUILD_FROM: alpine:3.19
+        BUILD_FROM: alpine:3.21
     container_name: hassio-claude-code-test
     ports:
       - "3000:3000"
