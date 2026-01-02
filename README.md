@@ -109,7 +109,7 @@ docker exec -it hassio-claude-code-test bash
 
 1. **Repository hinzufügen:**
    - Supervisor → Add-on Store → ⋮ (Menü oben rechts) → Repositories
-   - Ihre GitHub-URL eingeben: `https://github.com/YOURUSERNAME/hassio-addons-claude`
+   - GitHub-URL eingeben: `https://github.com/SeoFood/hassio-addons-claude`
    - "Add" klicken
 
 2. **Add-on installieren:**
