@@ -48,7 +48,7 @@ Home Assistant add-on manifest defining:
 ## Key Files
 
 - **[config.yaml](config.yaml)**: Home Assistant add-on configuration manifest
-- **[dockerfile](dockerfile)**: Container image definition with all dependencies
+- **[Dockerfile](Dockerfile)**: Container image definition with all dependencies
 - **[run.sh](run.sh)**: Startup script that configures environment and launches vibe-kanban
 - **[.vscode/settings.json](.vscode/settings.json)**: Configures Claude Code to skip permission prompts
 
@@ -68,7 +68,7 @@ docker run -p 3000:3000 -v ./data:/data hassio-claude-code
 
 ### Testing Changes
 
-After modifying [run.sh](run.sh), [dockerfile](dockerfile), or [config.yaml](config.yaml):
+After modifying [run.sh](run.sh), [Dockerfile](Dockerfile), or [config.yaml](config.yaml):
 1. Rebuild the add-on in Home Assistant or locally
 2. Access the web interface at `http://localhost:3000`
 3. Verify git configuration, SSH access, and vibe-kanban functionality

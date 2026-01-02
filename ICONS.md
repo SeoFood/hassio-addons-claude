@@ -1,50 +1,50 @@
-# Icons für Home Assistant Add-on
+# Icons for Home Assistant Add-on
 
-Für ein professionelleres Erscheinungsbild können Sie Icons hinzufügen:
+For a more professional appearance, you can add icons:
 
 ## Add-on Icon
 
-**Datei:** `icon.png`
-**Größe:** 128x128 Pixel
-**Format:** PNG mit transparentem Hintergrund
+**File:** `icon.png`
+**Size:** 128x128 pixels
+**Format:** PNG with transparent background
 
-Das Icon wird im Home Assistant Add-on Store neben dem Add-on-Namen angezeigt.
+The icon is displayed in the Home Assistant Add-on Store next to the add-on name.
 
 ## Repository Logo (optional)
 
-**Datei:** `logo.png`
-**Größe:** 256x256 Pixel (oder größer)
-**Format:** PNG mit transparentem Hintergrund
+**File:** `logo.png`
+**Size:** 256x256 pixels (or larger)
+**Format:** PNG with transparent background
 
-Das Logo wird oben im Repository im Add-on Store angezeigt.
+The logo is displayed at the top of the repository in the Add-on Store.
 
-## Icon erstellen
+## Creating an Icon
 
-Sie können ein Icon mit verschiedenen Tools erstellen:
+You can create an icon using various tools:
 
 1. **Online:**
-   - [Canva](https://www.canva.com/) - Einfacher Grafik-Editor
-   - [Figma](https://www.figma.com/) - Professionelles Design-Tool
+   - [Canva](https://www.canva.com/) - Simple graphics editor
+   - [Figma](https://www.figma.com/) - Professional design tool
 
 2. **Desktop:**
-   - GIMP (kostenlos)
+   - GIMP (free)
    - Photoshop
-   - Inkscape (für Vektorgrafiken)
+   - Inkscape (for vector graphics)
 
-3. **KI-generiert:**
-   - DALL-E, Midjourney, oder Stable Diffusion
+3. **AI-generated:**
+   - DALL-E, Midjourney, or Stable Diffusion
    - Prompt: "minimalist icon for a code development environment, Claude AI theme, 128x128, transparent background"
 
-## Beispiel-Theme
+## Example Theme
 
-Passend zu "Claude Code":
-- **Farben:** Blau/Orange (Claude-Farben) oder Dunkelblau mit Code-Symbolen
-- **Symbol:** Terminal-Symbol, Code-Brackets, oder KI-Symbol
-- **Stil:** Minimalistisch, flat design
+Matching "Claude Code":
+- **Colors:** Blue/Orange (Claude colors) or dark blue with code symbols
+- **Symbol:** Terminal symbol, code brackets, or AI symbol
+- **Style:** Minimalist, flat design
 
-## Nach dem Erstellen
+## After Creating
 
-1. Speichern Sie `icon.png` im Root-Verzeichnis
-2. Optional: `logo.png` im Root-Verzeichnis
-3. Committen und pushen Sie die Icons
-4. Home Assistant lädt die Icons automatisch beim nächsten Rebuild
+1. Save `icon.png` in the root directory
+2. Optional: `logo.png` in the root directory
+3. Commit and push the icons
+4. Home Assistant will load the icons automatically on next rebuild

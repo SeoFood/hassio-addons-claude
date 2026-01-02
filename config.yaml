@@ -1,5 +1,5 @@
 name: "Claude Code"
-description: "Claude Code Development Environment"
+description: "AI-powered development environment with Claude Code and Vibe Kanban"
 version: "1.0.0"
 slug: "claude-code"
 arch:
@@ -10,7 +10,7 @@ host_network: true
 ports:
   3000/tcp: 3000
 ports_description:
-  3000/tcp: "Claude Code Development Environment"
+  3000/tcp: "Vibe Kanban Web Interface"
 map:
   - config:rw
   - share:rw
