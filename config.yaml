@@ -1,6 +1,6 @@
 name: "Claude Code"
 description: "AI-powered development environment with Claude Code and Vibe Kanban"
-version: "1.4.8"
+version: "1.4.9"
 slug: "claude-code"
 image: "ghcr.io/seofood/claude-code"
 arch:
