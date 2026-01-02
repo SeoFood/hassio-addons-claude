@@ -2,7 +2,7 @@ ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
 # Cache breaker - change this to force rebuild
-ARG BUILD_VERSION=1.4.4
+ARG BUILD_VERSION=1.4.5
 ENV BUILD_VERSION=${BUILD_VERSION}
 
 # Install system packages and Node.js
@@ -20,9 +20,10 @@ RUN apk add --no-cache \
 # Install GitHub CLI
 RUN apk add --no-cache github-cli --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community
 
-# Install Bun
+# Install Bun globally
 RUN curl -fsSL https://bun.sh/install | bash \
-    && ln -s /root/.bun/bin/bun /usr/local/bin/bun
+    && cp /root/.bun/bin/bun /usr/local/bin/bun \
+    && chmod +rx /usr/local/bin/bun
 
 # Create claude user
 RUN adduser -D -s /bin/bash -u 1001 claude \
