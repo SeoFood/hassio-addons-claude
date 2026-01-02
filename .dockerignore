@@ -1,0 +1,22 @@
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+*.swp
+*.swo
+*~
+
+# Test data
+test-data
+test
+
+# Documentation
+*.md
+!README.md
+
+# Docker
+docker-compose.yml
+Dockerfile
+.dockerignore

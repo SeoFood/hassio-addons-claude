@@ -9,7 +9,7 @@ GIT_USER_EMAIL=$(jq -r '.git_user_email' $CONFIG_PATH)
 
 # Verzeichnisse einrichten
 mkdir -p /data/workspace /data/ssh /data/claude-config /data/vibe-kanban /data/gh-config /data/git-config
-chown -R claude:claude /data
+chown -R claude:claude /data/workspace /data/ssh /data/claude-config /data/vibe-kanban /data/gh-config /data/git-config 2>/dev/null || true
 
 # SSH Berechtigungen
 if [ -f /data/ssh/id_ed25519 ]; then
@@ -20,6 +20,10 @@ if [ -f /data/ssh/id_ed25519 ]; then
     chmod 600 /data/ssh/config 2>/dev/null || true
     chown -R claude:claude /data/ssh
 fi
+
+# Elternverzeichnisse für Symlinks erstellen
+mkdir -p /home/claude/.local/share
+mkdir -p /home/claude/.config
 
 # Symlinks für claude User
 ln -sf /data/ssh /home/claude/.ssh

@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  claude-code:
+    build:
+      context: .
+      dockerfile: dockerfile
+    container_name: hassio-claude-code-test
+    ports:
+      - "3000:3000"
+    volumes:
+      # Persistent data - simuliert Home Assistant's /data
+      - ./test-data:/data
+      # Mock Home Assistant Konfiguration
+      - ./test/options.json:/data/options.json:ro
+    environment:
+      - HOST=0.0.0.0
+      - PORT=3000
+    restart: unless-stopped
+    # Optional: Für Debugging
+    # stdin_open: true
+    # tty: true

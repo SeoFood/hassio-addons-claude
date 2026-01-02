@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     sudo \
     openssh-client \
+    jq \
     && rm -rf /var/lib/apt/lists/*
 
 # GitHub CLI
