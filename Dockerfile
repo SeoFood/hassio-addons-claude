@@ -24,14 +24,14 @@ RUN adduser -D -s /bin/bash -u 1001 claude \
 RUN npm install -g @anthropic-ai/claude-code vibe-kanban
 
 # Create data directories
-RUN mkdir -p /data/workspace /data/ssh /data/claude-config /data/vibe-kanban \
-    && chown -R claude:claude /data
+RUN mkdir -p /share/claude-code/workspace /share/claude-code/ssh /share/claude-code/claude-config /share/claude-code/vibe-kanban \
+    && chown -R claude:claude /share/claude-code
 
 # Copy startup script
 COPY run.sh /run.sh
 RUN chmod +x /run.sh
 
-WORKDIR /data/workspace
+WORKDIR /share/claude-code/workspace
 
 EXPOSE 3000
 

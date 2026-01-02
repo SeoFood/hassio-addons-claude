@@ -11,22 +11,22 @@ This is a **Home Assistant add-on** that provides a Claude Code development envi
 ### Container Structure
 
 The add-on creates a containerized development environment with:
-- **Base Image**: Node.js 24 on Debian Bookworm
+- **Base Image**: Alpine Linux with Node.js and npm
 - **Primary User**: `claude` (UID 1001) - all services run as this non-root user
 - **Global NPM Tools**: `@anthropic-ai/claude-code` and `vibe-kanban`
 - **System Tools**: git, curl, sudo, openssh-client, GitHub CLI (`gh`)
 
 ### Persistent Data Storage
 
-All persistent data is stored in `/data` with symlinks to the `claude` user's home directory:
-- `/data/workspace` → working directory for projects
-- `/data/ssh` → SSH keys and configuration (linked to `/home/claude/.ssh`)
-- `/data/claude-config` → Claude Code settings (linked to `/home/claude/.claude`)
-- `/data/vibe-kanban` → Kanban board data (linked to `/home/claude/.local/share/vibe-kanban`)
-- `/data/gh-config` → GitHub CLI configuration (linked to `/home/claude/.config/gh`)
-- `/data/git-config` → Git global configuration (linked to `/home/claude/.config/git`)
+All persistent data is stored in `/share/claude-code` (Home Assistant's shared storage) with symlinks to the `claude` user's home directory:
+- `/share/claude-code/workspace` → working directory for projects
+- `/share/claude-code/ssh` → SSH keys and configuration (linked to `/home/claude/.ssh`)
+- `/share/claude-code/claude-config` → Claude Code settings (linked to `/home/claude/.claude`)
+- `/share/claude-code/vibe-kanban` → Kanban board data (linked to `/home/claude/.local/share/vibe-kanban`)
+- `/share/claude-code/gh-config` → GitHub CLI configuration (linked to `/home/claude/.config/gh`)
+- `/share/claude-code/git-config` → Git global configuration (linked to `/home/claude/.config/git`)
 
-This architecture ensures all user data persists across container restarts.
+This architecture ensures all user data persists across container restarts and is accessible from other add-ons that mount `/share`.
 
 ### Startup Process ([run.sh](run.sh))
 
@@ -63,7 +63,7 @@ This add-on is built by Home Assistant's add-on build system. For local developm
 docker build -t hassio-claude-code .
 
 # Run the container locally
-docker run -p 3000:3000 -v ./data:/data hassio-claude-code
+docker run -p 3000:3000 -v ./data:/share/claude-code hassio-claude-code
 ```
 
 ### Testing Changes
@@ -75,18 +75,22 @@ After modifying [run.sh](run.sh), [Dockerfile](Dockerfile), or [config.yaml](con
 
 ### SSH Key Management
 
-To enable SSH/git operations, SSH keys must be placed in `/data/ssh/` (persists as Home Assistant add-on data):
-- Private key: `/data/ssh/id_ed25519`
-- Public key: `/data/ssh/id_ed25519.pub`
-- Known hosts: `/data/ssh/known_hosts`
-- SSH config: `/data/ssh/config`
+To enable SSH/git operations, SSH keys must be placed in `/share/claude-code/ssh/`:
+- Private key: `/share/claude-code/ssh/id_ed25519`
+- Public key: `/share/claude-code/ssh/id_ed25519.pub`
+- Known hosts: `/share/claude-code/ssh/known_hosts`
+- SSH config: `/share/claude-code/ssh/config`
 
-The startup script automatically sets correct permissions.
+The startup script automatically sets correct permissions. You can access these files via:
+- File Editor add-on (if it has access to `/share`)
+- SSH/Terminal add-on: `ls -la /share/claude-code/ssh/`
+- VS Code Server add-on: Navigate to `/share/claude-code/`
 
 ## Important Notes
 
 - The container runs as the non-root `claude` user for security
-- All paths use `/data` for persistence (mapped to Home Assistant's add-on data directory)
+- All persistent data is stored in `/share/claude-code/` (Home Assistant's shared storage directory)
+- This ensures data persists across container restarts and is accessible from other add-ons
 - Git configuration is applied from Home Assistant options on each startup
-- The add-on exposes the entire host network (`host_network: true`)
+- The add-on uses `host_network: true` mode for network access
 - Port 3000 serves the vibe-kanban web interface
