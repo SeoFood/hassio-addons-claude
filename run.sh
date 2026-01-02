@@ -10,7 +10,10 @@ GIT_USER_EMAIL=$(jq -r '.git_user_email' $CONFIG_PATH)
 
 # Create persistent directories
 mkdir -p $DATA_DIR/workspace $DATA_DIR/ssh $DATA_DIR/claude-config $DATA_DIR/vibe-kanban $DATA_DIR/gh-config $DATA_DIR/git-config
-chown -R claude:claude $DATA_DIR/workspace $DATA_DIR/ssh $DATA_DIR/claude-config $DATA_DIR/vibe-kanban $DATA_DIR/gh-config $DATA_DIR/git-config 2>/dev/null || true
+
+# Fix permissions for all persistent directories (especially workspace, which may have been modified by other add-ons)
+echo "Fixing file permissions in workspace..."
+chown -R claude:claude $DATA_DIR/workspace $DATA_DIR/ssh $DATA_DIR/claude-config $DATA_DIR/vibe-kanban $DATA_DIR/gh-config $DATA_DIR/git-config
 
 # Set SSH permissions
 if [ -f $DATA_DIR/ssh/id_ed25519 ]; then
