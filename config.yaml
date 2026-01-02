@@ -1,6 +1,6 @@
 name: "Claude Code"
 description: "AI-powered development environment with Claude Code and Vibe Kanban"
-version: "1.4.2"
+version: "1.4.3"
 slug: "claude-code"
 arch:
   - amd64
