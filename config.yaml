@@ -1,16 +1,15 @@
 name: "Claude Code"
 description: "AI-powered development environment with Claude Code and Vibe Kanban"
-version: "1.0.0"
+version: "1.0.1"
 slug: "claude-code"
 arch:
   - amd64
 init: false
 homeassistant_api: false
-host_network: true
-ports:
-  3000/tcp: 3000
-ports_description:
-  3000/tcp: "Vibe Kanban Web Interface"
+ingress: true
+ingress_port: 3000
+panel_icon: mdi:code-braces
+panel_title: "Claude Code"
 map:
   - config:rw
   - share:rw
