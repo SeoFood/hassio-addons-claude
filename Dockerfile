@@ -1,34 +1,33 @@
-ARG BUILD_FROM=node:24-bookworm
+ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
-# System-Pakete
-RUN apt-get update && apt-get install -y \
+# Install system packages and Node.js
+RUN apk add --no-cache \
+    nodejs \
+    npm \
     git \
     curl \
     sudo \
     openssh-client \
     jq \
-    && rm -rf /var/lib/apt/lists/*
+    bash \
+    shadow
 
-# GitHub CLI
-RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
-    && chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
-    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" > /etc/apt/sources.list.d/github-cli.list \
-    && apt-get update \
-    && apt-get install -y gh \
-    && rm -rf /var/lib/apt/lists/*
+# Install GitHub CLI
+RUN apk add --no-cache github-cli --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community
 
-# Claude User erstellen
-RUN useradd -m -s /bin/bash -u 1001 claude
+# Create claude user
+RUN adduser -D -s /bin/bash -u 1001 claude \
+    && echo "claude ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# Node Tools installieren
+# Install Node tools
 RUN npm install -g @anthropic-ai/claude-code vibe-kanban
 
-# Arbeitsverzeichnisse
+# Create data directories
 RUN mkdir -p /data/workspace /data/ssh /data/claude-config /data/vibe-kanban \
     && chown -R claude:claude /data
 
-# Startskript
+# Copy startup script
 COPY run.sh /run.sh
 RUN chmod +x /run.sh
 
