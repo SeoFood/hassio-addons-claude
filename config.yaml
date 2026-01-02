@@ -1,0 +1,22 @@
+name: "Claude Code"
+description: "Claude Code Development Environment"
+version: "1.0.0"
+slug: "claude-code"
+arch:
+  - amd64
+init: false
+homeassistant_api: false
+host_network: true
+ports:
+  3000/tcp: 3000
+ports_description:
+  3000/tcp: "Claude Code Development Environment"
+map:
+  - config:rw
+  - share:rw
+options:
+  git_user_name: ""
+  git_user_email: ""
+schema:
+  git_user_name: str
+  git_user_email: email
