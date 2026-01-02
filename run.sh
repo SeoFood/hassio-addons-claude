@@ -47,23 +47,34 @@ export HOST=0.0.0.0
 export PORT=3000
 export GIT_CONFIG_GLOBAL=$DATA_DIR/git-config/config
 
-# Install/Update Claude Code Plugins
-SETTINGS_FILE=$DATA_DIR/claude-config/settings.json
-if [ -f "$SETTINGS_FILE" ]; then
-    echo "Installing/updating Claude Code plugins..."
-    # Extract enabled plugins from settings.json and install them
-    PLUGINS=$(jq -r '.enabledPlugins | to_entries[] | select(.value == true) | .key' "$SETTINGS_FILE" 2>/dev/null)
-    if [ -n "$PLUGINS" ]; then
-        echo "$PLUGINS" | while read -r plugin; do
-            if [ -n "$plugin" ]; then
-                echo "Installing plugin: $plugin"
-                su claude -c "HOME=/home/claude npx @anthropic-ai/claude-code plugin install $plugin --yes" || echo "Warning: Failed to install $plugin"
-            fi
-        done
-    fi
+# Install Claude Code Plugins from Add-on Configuration
+# Read marketplace and plugin lists from Home Assistant options
+MARKETPLACES=$(jq -r '.marketplaces[]?' $CONFIG_PATH 2>/dev/null)
+PLUGINS=$(jq -r '.plugins[]?' $CONFIG_PATH 2>/dev/null)
+
+# Add configured marketplaces
+if [ -n "$MARKETPLACES" ]; then
+    echo "Adding Claude Code marketplaces..."
+    echo "$MARKETPLACES" | while read -r marketplace; do
+        if [ -n "$marketplace" ]; then
+            echo "Adding marketplace: $marketplace"
+            su claude -c "HOME=/home/claude claude plugin marketplace add $marketplace" >/dev/null 2>&1 || true
+        fi
+    done
+fi
+
+# Install configured plugins
+if [ -n "$PLUGINS" ]; then
+    echo "Installing Claude Code plugins..."
+    echo "$PLUGINS" | while read -r plugin; do
+        if [ -n "$plugin" ]; then
+            echo "Installing plugin: $plugin"
+            su claude -c "HOME=/home/claude claude plugin install $plugin --scope user" 2>&1 | grep -v "^npm warn" || true
+        fi
+    done
     echo "Plugin installation complete."
 else
-    echo "No settings.json found, skipping plugin installation."
+    echo "No plugins configured in add-on settings."
 fi
 
 echo "Starting Claude Code Development Environment..."

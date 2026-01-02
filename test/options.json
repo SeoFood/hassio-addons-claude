@@ -1,4 +1,13 @@
 {
-  "git_user_name": "Marco",
-  "git_user_email": "test@example.com"
+  "git_user_name": "test user",
+  "git_user_email": "test@example.com",
+  "marketplaces": [
+    "anthropics/claude-plugins-official",
+    "superpowers-marketplace/superpowers"
+  ],
+  "plugins": [
+    "commit-commands@claude-plugins-official",
+    "frontend-design@claude-plugins-official",
+    "ralph-wiggum@claude-plugins-official"
+  ]
 }

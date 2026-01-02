@@ -1,6 +1,6 @@
 name: "Claude Code"
 description: "AI-powered development environment with Claude Code and Vibe Kanban"
-version: "1.5.1"
+version: "1.6.0"
 slug: "claude-code"
 image: "ghcr.io/seofood/claude-code"
 arch:
@@ -19,6 +19,17 @@ map:
 options:
   git_user_name: ""
   git_user_email: ""
+  marketplaces:
+    - "anthropics/claude-plugins-official"
+    - "superpowers-marketplace/superpowers"
+  plugins:
+    - "commit-commands@claude-plugins-official"
+    - "frontend-design@claude-plugins-official"
+    - "ralph-wiggum@claude-plugins-official"
 schema:
   git_user_name: str
   git_user_email: email
+  marketplaces:
+    - str
+  plugins:
+    - str
