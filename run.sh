@@ -101,9 +101,11 @@ ln -sf $DATA_DIR/ssh-host-keys/ssh_host_ed25519_key.pub /etc/ssh/ssh_host_ed2551
 ln -sf $DATA_DIR/ssh-host-keys/ssh_host_rsa_key /etc/ssh/ssh_host_rsa_key
 ln -sf $DATA_DIR/ssh-host-keys/ssh_host_rsa_key.pub /etc/ssh/ssh_host_rsa_key.pub
 
-# Setup SSH authorized_keys
-mkdir -p /home/claude/.ssh
-> /home/claude/.ssh/authorized_keys
+# Setup SSH authorized_keys for sshd (NOT using the symlink!)
+# /home/claude/.ssh is a symlink to /share/claude-code/ssh/ for client configs
+# We need a separate authorized_keys for the SSH server
+SSHD_AUTH_KEYS="/etc/ssh/authorized_keys_claude"
+> $SSHD_AUTH_KEYS
 
 # Add public keys from add-on options
 echo "Adding SSH public keys from add-on options..."
@@ -117,24 +119,17 @@ if [ "$SSH_KEY_COUNT" -gt 0 ]; then
     for i in $(seq 0 $((SSH_KEY_COUNT - 1))); do
         key=$(jq -r ".ssh_public_keys[$i]" $CONFIG_PATH 2>/dev/null)
         if [ -n "$key" ] && [ "$key" != "null" ]; then
-            echo "$key" >> /home/claude/.ssh/authorized_keys
+            echo "$key" >> $SSHD_AUTH_KEYS
             echo "  Added key $((i+1)): ${key:0:30}..."
         fi
     done
 fi
 echo "SSH keys processing complete"
 
-# Also append keys from persistent storage if exists
-if [ -f $DATA_DIR/ssh/authorized_keys ]; then
-    cat $DATA_DIR/ssh/authorized_keys >> /home/claude/.ssh/authorized_keys
-    echo "Added keys from $DATA_DIR/ssh/authorized_keys"
-fi
-
-echo "Setting SSH directory permissions..."
-chmod 600 /home/claude/.ssh/authorized_keys || echo "WARNING: chmod authorized_keys failed"
-chown -R claude:claude /home/claude/.ssh || echo "WARNING: chown .ssh failed"
-chmod 700 /home/claude/.ssh || echo "WARNING: chmod .ssh failed"
-echo "SSH directory permissions set"
+echo "Setting SSH authorized_keys permissions..."
+chmod 600 $SSHD_AUTH_KEYS
+chown claude:claude $SSHD_AUTH_KEYS
+echo "SSH authorized_keys ready at $SSHD_AUTH_KEYS"
 
 # Create sshd config
 cat > /etc/ssh/sshd_config << 'SSHD_CONFIG'
@@ -142,7 +137,7 @@ Port 2222
 PermitRootLogin no
 PasswordAuthentication no
 PubkeyAuthentication yes
-AuthorizedKeysFile .ssh/authorized_keys
+AuthorizedKeysFile /etc/ssh/authorized_keys_claude
 X11Forwarding no
 PrintMotd no
 AcceptEnv LANG LC_*
