@@ -106,16 +106,14 @@ mkdir -p /home/claude/.ssh
 > /home/claude/.ssh/authorized_keys
 
 # Add public keys from add-on options
-SSH_KEYS=$(jq -r '.ssh_public_keys[]?' $CONFIG_PATH 2>/dev/null)
-if [ -n "$SSH_KEYS" ]; then
-    echo "Adding SSH public keys from add-on options..."
-    echo "$SSH_KEYS" | while read -r key; do
-        if [ -n "$key" ]; then
-            echo "$key" >> /home/claude/.ssh/authorized_keys
-            echo "  Added key: ${key:0:30}..."
-        fi
-    done
-fi
+echo "Adding SSH public keys from add-on options..."
+jq -r '.ssh_public_keys[]?' $CONFIG_PATH 2>/dev/null | while IFS= read -r key || [ -n "$key" ]; do
+    if [ -n "$key" ]; then
+        echo "$key" >> /home/claude/.ssh/authorized_keys
+        echo "  Added key: ${key:0:30}..."
+    fi
+done || true
+echo "SSH keys processing complete"
 
 # Also append keys from persistent storage if exists
 if [ -f $DATA_DIR/ssh/authorized_keys ]; then

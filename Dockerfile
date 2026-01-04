@@ -47,6 +47,6 @@ RUN chmod +x /run.sh
 
 WORKDIR /share/claude-code/workspace
 
-EXPOSE 3000
+EXPOSE 8088 7681 2222
 
 CMD ["/run.sh"]
