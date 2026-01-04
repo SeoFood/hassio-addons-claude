@@ -82,4 +82,10 @@ fi
 
 echo "Starting Claude Code Development Environment..."
 echo "Data directory: $DATA_DIR"
+
+# Start ttyd web terminal in background (port 7681)
+echo "Starting Web Terminal on port 7681..."
+su claude -c "ttyd -p 7681 -W bash" &
+
+# Start vibe-kanban
 exec su claude -c "npx vibe-kanban"

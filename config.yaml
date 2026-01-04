@@ -1,6 +1,6 @@
 name: "Claude Code"
 description: "AI-powered development environment with Claude Code and Vibe Kanban"
-version: "1.6.3"
+version: "1.7.0"
 slug: "claude-code"
 image: "ghcr.io/seofood/claude-code"
 arch:
@@ -10,8 +10,10 @@ homeassistant_api: false
 host_network: true
 ports:
   8088/tcp: 8088
+  7681/tcp: 7681
 ports_description:
   8088/tcp: "Vibe Kanban Web Interface"
+  7681/tcp: "Web Terminal (ttyd)"
 map:
   - config:rw
   - share:rw
