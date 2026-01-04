@@ -203,6 +203,15 @@ cd /share/claude-code/workspace
 BASHRC
 chown claude:claude /home/claude/.bashrc
 
+# Create .bash_profile to source .bashrc for SSH login shells
+cat > /home/claude/.bash_profile << 'BASH_PROFILE'
+# Source .bashrc for interactive shells
+if [ -f ~/.bashrc ]; then
+    source ~/.bashrc
+fi
+BASH_PROFILE
+chown claude:claude /home/claude/.bash_profile
+
 # Start ttyd web terminal in background (port 7681)
 echo "Starting Web Terminal on port 7681..."
 su claude -c "ttyd -p 7681 -W bash" &
