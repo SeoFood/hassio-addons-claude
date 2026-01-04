@@ -165,9 +165,10 @@ echo "Key fingerprint:"
 ssh-keygen -lf /home/claude/.ssh/authorized_keys 2>/dev/null || echo "Could not read"
 echo "====================="
 
-# Start SSH server with error output to stderr
-echo "Starting SSH server on port 2222..."
-/usr/sbin/sshd -e || echo "WARNING: SSH server failed to start"
+# Start SSH server in debug mode to diagnose auth issues
+# -ddd = maximum debug, -e = log to stderr
+echo "Starting SSH server on port 2222 (DEBUG MODE - first connection will show details)..."
+/usr/sbin/sshd -ddd -e &
 
 # Start ttyd web terminal in background (port 7681)
 echo "Starting Web Terminal on port 7681..."
