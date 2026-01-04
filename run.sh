@@ -36,6 +36,20 @@ ln -sf $DATA_DIR/vibe-kanban /home/claude/.local/share/vibe-kanban
 ln -sf $DATA_DIR/gh-config /home/claude/.config/gh
 ln -sf $DATA_DIR/git-config /home/claude/.config/git
 
+# Symlink .claude.json for persistent auth (Claude Code stores auth here)
+if [ -f $DATA_DIR/claude-config/.claude.json ]; then
+    ln -sf $DATA_DIR/claude-config/.claude.json /home/claude/.claude.json
+elif [ -f /home/claude/.claude.json ]; then
+    # Move existing .claude.json to persistent storage
+    mv /home/claude/.claude.json $DATA_DIR/claude-config/.claude.json
+    ln -sf $DATA_DIR/claude-config/.claude.json /home/claude/.claude.json
+else
+    # Create empty file and symlink
+    touch $DATA_DIR/claude-config/.claude.json
+    ln -sf $DATA_DIR/claude-config/.claude.json /home/claude/.claude.json
+fi
+chown claude:claude $DATA_DIR/claude-config/.claude.json
+
 # Configure git
 if [ -n "$GIT_USER_NAME" ] && [ "$GIT_USER_NAME" != "null" ]; then
     su claude -c "git config --global user.name '$GIT_USER_NAME'"

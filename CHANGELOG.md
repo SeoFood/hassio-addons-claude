@@ -2,6 +2,13 @@
 
 All notable changes to this add-on will be documented in this file.
 
+## [1.7.17] - 2026-01-04
+
+### Fixed
+- **Claude Code authentication persistence** - `.claude.json` file is now symlinked to persistent storage
+  - Previously only `.claude/` directory was symlinked, but auth data lives in `.claude.json`
+  - Users no longer need to re-authenticate after container restarts
+
 ## [1.7.15] - 2026-01-04
 
 ### Added
