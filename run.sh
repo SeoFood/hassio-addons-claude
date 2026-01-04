@@ -83,11 +83,11 @@ fi
 echo "Starting Claude Code Development Environment..."
 echo "Data directory: $DATA_DIR"
 
-# Configure SSH server
+# Configure SSH server (simplified setup)
 echo "Configuring SSH server..."
 mkdir -p /etc/ssh
 mkdir -p $DATA_DIR/ssh-host-keys
-mkdir -p /var/run/sshd  # Required for privilege separation
+mkdir -p /var/run/sshd
 
 # Generate host keys if they don't exist (persist across restarts)
 if [ ! -f $DATA_DIR/ssh-host-keys/ssh_host_ed25519_key ]; then
@@ -95,49 +95,62 @@ if [ ! -f $DATA_DIR/ssh-host-keys/ssh_host_ed25519_key ]; then
     ssh-keygen -t rsa -b 4096 -f $DATA_DIR/ssh-host-keys/ssh_host_rsa_key -N ""
 fi
 
-# Link host keys
-ln -sf $DATA_DIR/ssh-host-keys/ssh_host_ed25519_key /etc/ssh/ssh_host_ed25519_key
-ln -sf $DATA_DIR/ssh-host-keys/ssh_host_ed25519_key.pub /etc/ssh/ssh_host_ed25519_key.pub
-ln -sf $DATA_DIR/ssh-host-keys/ssh_host_rsa_key /etc/ssh/ssh_host_rsa_key
-ln -sf $DATA_DIR/ssh-host-keys/ssh_host_rsa_key.pub /etc/ssh/ssh_host_rsa_key.pub
+# Copy host keys to standard location (sshd requires specific ownership)
+cp $DATA_DIR/ssh-host-keys/ssh_host_ed25519_key /etc/ssh/
+cp $DATA_DIR/ssh-host-keys/ssh_host_ed25519_key.pub /etc/ssh/
+cp $DATA_DIR/ssh-host-keys/ssh_host_rsa_key /etc/ssh/
+cp $DATA_DIR/ssh-host-keys/ssh_host_rsa_key.pub /etc/ssh/
+chmod 600 /etc/ssh/ssh_host_*_key
+chmod 644 /etc/ssh/ssh_host_*_key.pub
 
-# Setup SSH authorized_keys for sshd (NOT using the symlink!)
-# /home/claude/.ssh is a symlink to /share/claude-code/ssh/ for client configs
-# We need a separate authorized_keys for the SSH server
-SSHD_AUTH_KEYS="/etc/ssh/authorized_keys_claude"
-> $SSHD_AUTH_KEYS
+# Setup authorized_keys in standard location
+# Remove the symlink and create a real .ssh directory for sshd
+rm -rf /home/claude/.ssh
+mkdir -p /home/claude/.ssh
+chmod 700 /home/claude/.ssh
 
-# Add public keys from add-on options
-echo "Adding SSH public keys from add-on options..."
-SSH_KEY_COUNT=$(jq -r '.ssh_public_keys | length // 0' $CONFIG_PATH 2>/dev/null)
-# Ensure SSH_KEY_COUNT is a valid number
-if ! [ "$SSH_KEY_COUNT" -eq "$SSH_KEY_COUNT" ] 2>/dev/null || [ -z "$SSH_KEY_COUNT" ]; then
-    SSH_KEY_COUNT=0
+# Copy existing SSH client configs from persistent storage (if any)
+if [ -f $DATA_DIR/ssh/config ]; then
+    cp $DATA_DIR/ssh/config /home/claude/.ssh/
 fi
-echo "Found $SSH_KEY_COUNT SSH keys in config"
-if [ "$SSH_KEY_COUNT" -gt 0 ]; then
-    for i in $(seq 0 $((SSH_KEY_COUNT - 1))); do
-        key=$(jq -r ".ssh_public_keys[$i]" $CONFIG_PATH 2>/dev/null)
-        if [ -n "$key" ] && [ "$key" != "null" ]; then
-            echo "$key" >> $SSHD_AUTH_KEYS
-            echo "  Added key $((i+1)): ${key:0:30}..."
-        fi
-    done
+if [ -f $DATA_DIR/ssh/known_hosts ]; then
+    cp $DATA_DIR/ssh/known_hosts /home/claude/.ssh/
 fi
-echo "SSH keys processing complete"
+if [ -f $DATA_DIR/ssh/id_ed25519 ]; then
+    cp $DATA_DIR/ssh/id_ed25519 /home/claude/.ssh/
+    chmod 600 /home/claude/.ssh/id_ed25519
+fi
+if [ -f $DATA_DIR/ssh/id_ed25519.pub ]; then
+    cp $DATA_DIR/ssh/id_ed25519.pub /home/claude/.ssh/
+fi
 
-echo "Setting SSH authorized_keys permissions..."
-chmod 600 $SSHD_AUTH_KEYS
-chown claude:claude $SSHD_AUTH_KEYS
-echo "SSH authorized_keys ready at $SSHD_AUTH_KEYS"
+# Create authorized_keys from add-on config
+AUTH_KEYS="/home/claude/.ssh/authorized_keys"
+> $AUTH_KEYS
 
-# Create sshd config
+echo "Setting up SSH public keys..."
+jq -r '.ssh_public_keys[]? // empty' $CONFIG_PATH 2>/dev/null | while read -r key; do
+    if [ -n "$key" ]; then
+        echo "$key" >> $AUTH_KEYS
+        echo "  Added key: ${key:0:40}..."
+    fi
+done
+
+# Set correct ownership and permissions
+chown -R claude:claude /home/claude/.ssh
+chmod 600 $AUTH_KEYS 2>/dev/null || true
+
+KEY_COUNT=$(wc -l < $AUTH_KEYS 2>/dev/null || echo "0")
+echo "Authorized keys configured: $KEY_COUNT key(s)"
+
+# Create sshd config (simplified)
 cat > /etc/ssh/sshd_config << 'SSHD_CONFIG'
 Port 2222
 PermitRootLogin no
 PasswordAuthentication no
 PubkeyAuthentication yes
-AuthorizedKeysFile /etc/ssh/authorized_keys_claude
+AuthorizedKeysFile .ssh/authorized_keys
+StrictModes yes
 X11Forwarding no
 PrintMotd no
 AcceptEnv LANG LC_*
