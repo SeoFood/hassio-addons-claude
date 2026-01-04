@@ -17,7 +17,8 @@ RUN apk add --no-cache \
     bash \
     shadow \
     sqlite \
-    ttyd
+    ttyd \
+    tmux
 
 # Update npm to latest version
 RUN npm install -g npm@latest

@@ -7,7 +7,9 @@ services:
         BUILD_FROM: alpine:3.21
     container_name: hassio-claude-code-test
     ports:
-      - "3000:3000"
+      - "8088:8088"   # Vibe Kanban
+      - "7681:7681"   # Web Terminal (ttyd)
+      - "2222:2222"   # SSH Server
     volumes:
       # Persistent data - simulates Home Assistant's /share/claude-code
       - ./test-data:/share/claude-code
@@ -15,8 +17,5 @@ services:
       - ./test/options.json:/data/options.json:ro
     environment:
       - HOST=0.0.0.0
-      - PORT=3000
+      - PORT=8088
     restart: unless-stopped
-    # Optional: For debugging
-    # stdin_open: true
-    # tty: true

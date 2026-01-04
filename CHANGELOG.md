@@ -2,6 +2,38 @@
 
 All notable changes to this add-on will be documented in this file.
 
+## [1.7.15] - 2026-01-04
+
+### Added
+- **SSH Server** with public key authentication on port 2222
+  - Configure SSH public keys via Home Assistant add-on UI
+  - Persistent host keys across container restarts
+  - Fixed OpenSSH 10+ locked account issue (`passwd -u claude`)
+- **Web Terminal** (ttyd) on port 7681 for browser-based terminal access
+- **tmux support** for persistent Claude Code sessions
+  - `cc` command starts Claude Code in tmux session
+  - Reconnects to existing session if available
+  - Sessions survive SSH disconnects
+- **Enhanced shell environment**
+  - Git-aware prompt showing current branch
+  - Enhanced bash history (10k entries, timestamps, immediate save)
+  - Git aliases: `gs`, `gl`, `gd`, `ga`, `gc`, `gp`
+  - Color support for `ls` and `grep`
+  - Auto-cd to `/share/claude-code/workspace` on login
+
+### Changed
+- SSH and web terminal sessions now start in `/share/claude-code/workspace`
+
+## [1.6.3] - 2026-01-03
+
+### Changed
+- Changed Vibe Kanban port from 3000 to 8088 to avoid conflicts with dev servers
+
+## [1.6.2] - 2026-01-03
+
+### Fixed
+- Fix workspace permissions on startup for VS Code Server compatibility
+
 ## [1.6.1] - 2026-01-02
 
 ### Fixed

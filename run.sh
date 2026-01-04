@@ -165,8 +165,14 @@ echo "Starting SSH server on port 2222..."
 # Setup bash config for claude user
 cat >> /home/claude/.bashrc << 'BASHRC'
 
-# Claude Code alias
-alias cc='claude --dangerously-skip-permissions'
+# Claude Code in tmux (reconnects if session exists)
+cc() {
+    if tmux has-session -t claude 2>/dev/null; then
+        tmux attach -t claude
+    else
+        tmux new-session -s claude "claude --dangerously-skip-permissions"
+    fi
+}
 
 # Git prompt
 parse_git_branch() {
