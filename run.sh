@@ -103,8 +103,11 @@ cp $DATA_DIR/ssh-host-keys/ssh_host_rsa_key.pub /etc/ssh/
 chmod 600 /etc/ssh/ssh_host_*_key
 chmod 644 /etc/ssh/ssh_host_*_key.pub
 
+# Fix home directory permissions (required for sshd StrictModes)
+chmod 755 /home/claude
+chown claude:claude /home/claude
+
 # Setup authorized_keys in standard location
-# Remove the symlink and create a real .ssh directory for sshd
 rm -rf /home/claude/.ssh
 mkdir -p /home/claude/.ssh
 chmod 700 /home/claude/.ssh
@@ -143,30 +146,32 @@ chmod 600 $AUTH_KEYS 2>/dev/null || true
 KEY_COUNT=$(wc -l < $AUTH_KEYS 2>/dev/null || echo "0")
 echo "Authorized keys configured: $KEY_COUNT key(s)"
 
-# Create sshd config (simplified)
+# Create sshd config
 cat > /etc/ssh/sshd_config << 'SSHD_CONFIG'
 Port 2222
 PermitRootLogin no
 PasswordAuthentication no
 PubkeyAuthentication yes
 AuthorizedKeysFile /home/claude/.ssh/authorized_keys
-StrictModes yes
+StrictModes no
 X11Forwarding no
 PrintMotd no
 AcceptEnv LANG LC_*
 Subsystem sftp /usr/lib/ssh/sftp-server
-LogLevel DEBUG
 SSHD_CONFIG
 
-# Verify authorized_keys content
-echo "Verifying authorized_keys:"
-cat /home/claude/.ssh/authorized_keys | head -c 80
-echo "..."
-ssh-keygen -lf /home/claude/.ssh/authorized_keys 2>/dev/null || echo "Could not read key fingerprint"
+# Verify setup
+echo "=== SSH Debug Info ==="
+echo "Home dir: $(ls -ld /home/claude)"
+echo ".ssh dir: $(ls -ld /home/claude/.ssh)"
+echo "auth_keys: $(ls -l /home/claude/.ssh/authorized_keys)"
+echo "Key fingerprint:"
+ssh-keygen -lf /home/claude/.ssh/authorized_keys 2>/dev/null || echo "Could not read"
+echo "====================="
 
-# Start SSH server
+# Start SSH server with error output to stderr
 echo "Starting SSH server on port 2222..."
-/usr/sbin/sshd || echo "WARNING: SSH server failed to start"
+/usr/sbin/sshd -e || echo "WARNING: SSH server failed to start"
 
 # Start ttyd web terminal in background (port 7681)
 echo "Starting Web Terminal on port 7681..."
