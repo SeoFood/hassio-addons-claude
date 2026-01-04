@@ -103,6 +103,9 @@ cp $DATA_DIR/ssh-host-keys/ssh_host_rsa_key.pub /etc/ssh/
 chmod 600 /etc/ssh/ssh_host_*_key
 chmod 644 /etc/ssh/ssh_host_*_key.pub
 
+# Unlock the claude account (required for SSH - OpenSSH 10+ checks for locked accounts)
+passwd -u claude 2>/dev/null || usermod -p '*' claude 2>/dev/null || true
+
 # Fix home directory permissions (required for sshd StrictModes)
 chmod 755 /home/claude
 chown claude:claude /home/claude
@@ -139,8 +142,7 @@ chmod 600 $AUTH_KEYS
 # Show what we have
 KEY_COUNT=$(wc -l < $AUTH_KEYS)
 echo "Authorized keys configured: $KEY_COUNT key(s)"
-echo "File content:"
-cat $AUTH_KEYS
+ssh-keygen -lf /home/claude/.ssh/authorized_keys 2>/dev/null || true
 
 # Create sshd config
 cat > /etc/ssh/sshd_config << 'SSHD_CONFIG'
@@ -149,26 +151,16 @@ PermitRootLogin no
 PasswordAuthentication no
 PubkeyAuthentication yes
 AuthorizedKeysFile /home/claude/.ssh/authorized_keys
-StrictModes no
+StrictModes yes
 X11Forwarding no
 PrintMotd no
 AcceptEnv LANG LC_*
 Subsystem sftp /usr/lib/ssh/sftp-server
 SSHD_CONFIG
 
-# Verify setup
-echo "=== SSH Debug Info ==="
-echo "Home dir: $(ls -ld /home/claude)"
-echo ".ssh dir: $(ls -ld /home/claude/.ssh)"
-echo "auth_keys: $(ls -l /home/claude/.ssh/authorized_keys)"
-echo "Key fingerprint:"
-ssh-keygen -lf /home/claude/.ssh/authorized_keys 2>/dev/null || echo "Could not read"
-echo "====================="
-
-# Start SSH server in debug mode to diagnose auth issues
-# -ddd = maximum debug, -e = log to stderr
-echo "Starting SSH server on port 2222 (DEBUG MODE - first connection will show details)..."
-/usr/sbin/sshd -ddd -e &
+# Start SSH server
+echo "Starting SSH server on port 2222..."
+/usr/sbin/sshd || echo "WARNING: SSH server failed to start"
 
 # Start ttyd web terminal in background (port 7681)
 echo "Starting Web Terminal on port 7681..."
