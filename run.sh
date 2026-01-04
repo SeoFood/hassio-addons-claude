@@ -127,24 +127,20 @@ if [ -f $DATA_DIR/ssh/id_ed25519.pub ]; then
     cp $DATA_DIR/ssh/id_ed25519.pub /home/claude/.ssh/
 fi
 
-# Create authorized_keys from add-on config
+# Create authorized_keys from add-on config (direct write, no subshell)
 AUTH_KEYS="/home/claude/.ssh/authorized_keys"
-> $AUTH_KEYS
-
 echo "Setting up SSH public keys..."
-jq -r '.ssh_public_keys[]? // empty' $CONFIG_PATH 2>/dev/null | while read -r key; do
-    if [ -n "$key" ]; then
-        echo "$key" >> $AUTH_KEYS
-        echo "  Added key: ${key:0:40}..."
-    fi
-done
+jq -r '.ssh_public_keys[]? // empty' $CONFIG_PATH 2>/dev/null > $AUTH_KEYS || true
 
 # Set correct ownership and permissions
 chown -R claude:claude /home/claude/.ssh
-chmod 600 $AUTH_KEYS 2>/dev/null || true
+chmod 600 $AUTH_KEYS
 
-KEY_COUNT=$(wc -l < $AUTH_KEYS 2>/dev/null || echo "0")
+# Show what we have
+KEY_COUNT=$(wc -l < $AUTH_KEYS)
 echo "Authorized keys configured: $KEY_COUNT key(s)"
+echo "File content:"
+cat $AUTH_KEYS
 
 # Create sshd config
 cat > /etc/ssh/sshd_config << 'SSHD_CONFIG'
