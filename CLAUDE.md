@@ -63,6 +63,7 @@ Home Assistant add-on manifest defining:
   - `git_user_name`, `git_user_email` - Git configuration
   - `ssh_public_keys` - List of authorized SSH public keys
   - `packages` - Alpine packages to install on startup (e.g., `ffmpeg`, `python3`)
+  - `persistent_directories` - Additional directories to persist (e.g., `.convex`, `.npm`)
   - `marketplaces` - Claude Code plugin marketplaces
   - `plugins` - Claude Code plugins to install
 

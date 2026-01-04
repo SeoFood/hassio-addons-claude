@@ -2,6 +2,14 @@
 
 All notable changes to this add-on will be documented in this file.
 
+## [1.7.19] - 2026-01-04
+
+### Added
+- **Configurable persistent directories** - New `persistent_directories` option in add-on settings
+  - Define custom directories to persist across container restarts (e.g., `.convex`, `.npm`, `.cache`)
+  - Directories are stored in `/share/claude-code/<name>` and symlinked to `/home/claude/<name>`
+  - Leading dots are removed for storage names (`.convex` → `/share/claude-code/convex`)
+
 ## [1.7.18] - 2026-01-04
 
 ### Added

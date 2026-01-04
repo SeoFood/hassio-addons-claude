@@ -36,6 +36,22 @@ ln -sf $DATA_DIR/vibe-kanban /home/claude/.local/share/vibe-kanban
 ln -sf $DATA_DIR/gh-config /home/claude/.config/gh
 ln -sf $DATA_DIR/git-config /home/claude/.config/git
 
+# Create user-configured persistent directories
+PERSISTENT_DIRS=$(jq -r '.persistent_directories[]?' $CONFIG_PATH 2>/dev/null)
+if [ -n "$PERSISTENT_DIRS" ]; then
+    echo "Setting up persistent directories..."
+    echo "$PERSISTENT_DIRS" | while read -r dir; do
+        if [ -n "$dir" ]; then
+            # Remove leading dot for storage name (e.g., .convex -> convex)
+            storage_name="${dir#.}"
+            echo "Creating persistent directory: $dir -> $DATA_DIR/$storage_name"
+            mkdir -p "$DATA_DIR/$storage_name"
+            chown claude:claude "$DATA_DIR/$storage_name"
+            ln -sf "$DATA_DIR/$storage_name" "/home/claude/$dir"
+        fi
+    done
+fi
+
 # Symlink .claude.json for persistent auth (Claude Code stores auth here)
 if [ -f $DATA_DIR/claude-config/.claude.json ]; then
     ln -sf $DATA_DIR/claude-config/.claude.json /home/claude/.claude.json
