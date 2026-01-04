@@ -162,6 +162,41 @@ SSHD_CONFIG
 echo "Starting SSH server on port 2222..."
 /usr/sbin/sshd || echo "WARNING: SSH server failed to start"
 
+# Setup bash config for claude user
+cat >> /home/claude/.bashrc << 'BASHRC'
+
+# Claude Code alias
+alias cc='claude --dangerously-skip-permissions'
+
+# Git prompt
+parse_git_branch() {
+    git branch 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+}
+PS1='\[\033[01;32m\]\u\[\033[00m\]:\[\033[01;34m\]\w\[\033[33m\]$(parse_git_branch)\[\033[00m\]\$ '
+
+# History settings
+HISTSIZE=10000
+HISTFILESIZE=20000
+HISTTIMEFORMAT="%F %T "
+shopt -s histappend
+PROMPT_COMMAND="history -a"
+
+# Useful aliases
+alias gs='git status'
+alias gl='git log --oneline -20'
+alias gd='git diff'
+alias ga='git add'
+alias gc='git commit'
+alias gp='git push'
+alias ll='ls -la --color=auto'
+alias ls='ls --color=auto'
+alias grep='grep --color=auto'
+
+# Start in workspace
+cd /share/claude-code/workspace
+BASHRC
+chown claude:claude /home/claude/.bashrc
+
 # Start ttyd web terminal in background (port 7681)
 echo "Starting Web Terminal on port 7681..."
 su claude -c "ttyd -p 7681 -W bash" &
