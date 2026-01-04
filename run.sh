@@ -123,9 +123,11 @@ if [ -f $DATA_DIR/ssh/authorized_keys ]; then
     echo "Added keys from $DATA_DIR/ssh/authorized_keys"
 fi
 
-chmod 600 /home/claude/.ssh/authorized_keys
-chown -R claude:claude /home/claude/.ssh
-chmod 700 /home/claude/.ssh
+echo "Setting SSH directory permissions..."
+chmod 600 /home/claude/.ssh/authorized_keys || echo "WARNING: chmod authorized_keys failed"
+chown -R claude:claude /home/claude/.ssh || echo "WARNING: chown .ssh failed"
+chmod 700 /home/claude/.ssh || echo "WARNING: chmod .ssh failed"
+echo "SSH directory permissions set"
 
 # Create sshd config
 cat > /etc/ssh/sshd_config << 'SSHD_CONFIG'
