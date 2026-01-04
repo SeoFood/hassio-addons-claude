@@ -107,15 +107,21 @@ mkdir -p /home/claude/.ssh
 
 # Add public keys from add-on options
 echo "Adding SSH public keys from add-on options..."
-SSH_KEY_COUNT=$(jq -r '.ssh_public_keys | length' $CONFIG_PATH 2>/dev/null || echo "0")
+SSH_KEY_COUNT=$(jq -r '.ssh_public_keys | length // 0' $CONFIG_PATH 2>/dev/null)
+# Ensure SSH_KEY_COUNT is a valid number
+if ! [ "$SSH_KEY_COUNT" -eq "$SSH_KEY_COUNT" ] 2>/dev/null || [ -z "$SSH_KEY_COUNT" ]; then
+    SSH_KEY_COUNT=0
+fi
 echo "Found $SSH_KEY_COUNT SSH keys in config"
-for i in $(seq 0 $((SSH_KEY_COUNT - 1))); do
-    key=$(jq -r ".ssh_public_keys[$i]" $CONFIG_PATH 2>/dev/null || true)
-    if [ -n "$key" ] && [ "$key" != "null" ]; then
-        echo "$key" >> /home/claude/.ssh/authorized_keys
-        echo "  Added key $((i+1)): ${key:0:30}..."
-    fi
-done
+if [ "$SSH_KEY_COUNT" -gt 0 ]; then
+    for i in $(seq 0 $((SSH_KEY_COUNT - 1))); do
+        key=$(jq -r ".ssh_public_keys[$i]" $CONFIG_PATH 2>/dev/null)
+        if [ -n "$key" ] && [ "$key" != "null" ]; then
+            echo "$key" >> /home/claude/.ssh/authorized_keys
+            echo "  Added key $((i+1)): ${key:0:30}..."
+        fi
+    done
+fi
 echo "SSH keys processing complete"
 
 # Also append keys from persistent storage if exists
