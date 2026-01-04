@@ -149,13 +149,20 @@ Port 2222
 PermitRootLogin no
 PasswordAuthentication no
 PubkeyAuthentication yes
-AuthorizedKeysFile .ssh/authorized_keys
+AuthorizedKeysFile /home/claude/.ssh/authorized_keys
 StrictModes yes
 X11Forwarding no
 PrintMotd no
 AcceptEnv LANG LC_*
 Subsystem sftp /usr/lib/ssh/sftp-server
+LogLevel DEBUG
 SSHD_CONFIG
+
+# Verify authorized_keys content
+echo "Verifying authorized_keys:"
+cat /home/claude/.ssh/authorized_keys | head -c 80
+echo "..."
+ssh-keygen -lf /home/claude/.ssh/authorized_keys 2>/dev/null || echo "Could not read key fingerprint"
 
 # Start SSH server
 echo "Starting SSH server on port 2222..."
