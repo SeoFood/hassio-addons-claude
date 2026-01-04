@@ -12,7 +12,7 @@ RUN apk add --no-cache \
     git \
     curl \
     sudo \
-    openssh-client \
+    openssh \
     jq \
     bash \
     shadow \

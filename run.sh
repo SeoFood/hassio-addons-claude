@@ -83,6 +83,68 @@ fi
 echo "Starting Claude Code Development Environment..."
 echo "Data directory: $DATA_DIR"
 
+# Configure SSH server
+echo "Configuring SSH server..."
+mkdir -p /etc/ssh
+mkdir -p $DATA_DIR/ssh-host-keys
+
+# Generate host keys if they don't exist (persist across restarts)
+if [ ! -f $DATA_DIR/ssh-host-keys/ssh_host_ed25519_key ]; then
+    ssh-keygen -t ed25519 -f $DATA_DIR/ssh-host-keys/ssh_host_ed25519_key -N ""
+    ssh-keygen -t rsa -b 4096 -f $DATA_DIR/ssh-host-keys/ssh_host_rsa_key -N ""
+fi
+
+# Link host keys
+ln -sf $DATA_DIR/ssh-host-keys/ssh_host_ed25519_key /etc/ssh/ssh_host_ed25519_key
+ln -sf $DATA_DIR/ssh-host-keys/ssh_host_ed25519_key.pub /etc/ssh/ssh_host_ed25519_key.pub
+ln -sf $DATA_DIR/ssh-host-keys/ssh_host_rsa_key /etc/ssh/ssh_host_rsa_key
+ln -sf $DATA_DIR/ssh-host-keys/ssh_host_rsa_key.pub /etc/ssh/ssh_host_rsa_key.pub
+
+# Setup SSH authorized_keys
+mkdir -p /home/claude/.ssh
+> /home/claude/.ssh/authorized_keys
+
+# Add public keys from add-on options
+SSH_KEYS=$(jq -r '.ssh_public_keys[]?' $CONFIG_PATH 2>/dev/null)
+if [ -n "$SSH_KEYS" ]; then
+    echo "Adding SSH public keys from add-on options..."
+    echo "$SSH_KEYS" | while read -r key; do
+        if [ -n "$key" ]; then
+            echo "$key" >> /home/claude/.ssh/authorized_keys
+            echo "  Added key: ${key:0:30}..."
+        fi
+    done
+fi
+
+# Also append keys from persistent storage if exists
+if [ -f $DATA_DIR/ssh/authorized_keys ]; then
+    cat $DATA_DIR/ssh/authorized_keys >> /home/claude/.ssh/authorized_keys
+    echo "Added keys from $DATA_DIR/ssh/authorized_keys"
+fi
+
+chmod 600 /home/claude/.ssh/authorized_keys
+chown -R claude:claude /home/claude/.ssh
+chmod 700 /home/claude/.ssh
+
+# Create sshd config
+cat > /etc/ssh/sshd_config << 'SSHD_CONFIG'
+Port 2222
+PermitRootLogin no
+PasswordAuthentication no
+PubkeyAuthentication yes
+AuthorizedKeysFile .ssh/authorized_keys
+ChallengeResponseAuthentication no
+UsePAM no
+X11Forwarding no
+PrintMotd no
+AcceptEnv LANG LC_*
+Subsystem sftp /usr/lib/ssh/sftp-server
+SSHD_CONFIG
+
+# Start SSH server
+echo "Starting SSH server on port 2222..."
+/usr/sbin/sshd
+
 # Start ttyd web terminal in background (port 7681)
 echo "Starting Web Terminal on port 7681..."
 su claude -c "ttyd -p 7681 -W bash" &

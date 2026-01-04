@@ -1,6 +1,6 @@
 name: "Claude Code"
 description: "AI-powered development environment with Claude Code and Vibe Kanban"
-version: "1.7.0"
+version: "1.7.1"
 slug: "claude-code"
 image: "ghcr.io/seofood/claude-code"
 arch:
@@ -11,9 +11,11 @@ host_network: true
 ports:
   8088/tcp: 8088
   7681/tcp: 7681
+  2222/tcp: 2222
 ports_description:
   8088/tcp: "Vibe Kanban Web Interface"
   7681/tcp: "Web Terminal (ttyd)"
+  2222/tcp: "SSH Server"
 map:
   - config:rw
   - share:rw
@@ -21,6 +23,7 @@ map:
 options:
   git_user_name: ""
   git_user_email: ""
+  ssh_public_keys: []
   marketplaces:
     - "anthropics/claude-plugins-official"
     - "obra/superpowers-marketplace"
@@ -32,6 +35,8 @@ options:
 schema:
   git_user_name: str
   git_user_email: email
+  ssh_public_keys:
+    - str
   marketplaces:
     - str
   plugins:
