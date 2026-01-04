@@ -9,11 +9,11 @@ GIT_USER_NAME=$(jq -r '.git_user_name' $CONFIG_PATH)
 GIT_USER_EMAIL=$(jq -r '.git_user_email' $CONFIG_PATH)
 
 # Create persistent directories
-mkdir -p $DATA_DIR/workspace $DATA_DIR/ssh $DATA_DIR/claude-config $DATA_DIR/vibe-kanban $DATA_DIR/gh-config $DATA_DIR/git-config
+mkdir -p $DATA_DIR/workspace $DATA_DIR/ssh $DATA_DIR/claude-config $DATA_DIR/vibe-kanban $DATA_DIR/gh-config $DATA_DIR/git-config $DATA_DIR/bin
 
 # Fix permissions for all persistent directories (especially workspace, which may have been modified by other add-ons)
 echo "Fixing file permissions in workspace..."
-chown -R claude:claude $DATA_DIR/workspace $DATA_DIR/ssh $DATA_DIR/claude-config $DATA_DIR/vibe-kanban $DATA_DIR/gh-config $DATA_DIR/git-config
+chown -R claude:claude $DATA_DIR/workspace $DATA_DIR/ssh $DATA_DIR/claude-config $DATA_DIR/vibe-kanban $DATA_DIR/gh-config $DATA_DIR/git-config $DATA_DIR/bin
 
 # Set SSH permissions
 if [ -f $DATA_DIR/ssh/id_ed25519 ]; then
@@ -63,6 +63,19 @@ export HOME=/home/claude
 export HOST=0.0.0.0
 export PORT=8088
 export GIT_CONFIG_GLOBAL=$DATA_DIR/git-config/config
+
+# Install Alpine packages from Add-on Configuration
+PACKAGES=$(jq -r '.packages[]?' $CONFIG_PATH 2>/dev/null)
+if [ -n "$PACKAGES" ]; then
+    echo "Installing Alpine packages..."
+    echo "$PACKAGES" | while read -r package; do
+        if [ -n "$package" ]; then
+            echo "Installing package: $package"
+            apk add --no-cache "$package" 2>&1 || echo "WARNING: Failed to install $package"
+        fi
+    done
+    echo "Package installation complete."
+fi
 
 # Install Claude Code Plugins from Add-on Configuration
 # Read marketplace and plugin lists from Home Assistant options
@@ -178,6 +191,9 @@ echo "Starting SSH server on port 2222..."
 
 # Setup bash config for claude user
 cat >> /home/claude/.bashrc << 'BASHRC'
+
+# Custom binaries directory
+export PATH="/share/claude-code/bin:$PATH"
 
 # Claude Code in tmux (reconnects if session exists)
 cc() {

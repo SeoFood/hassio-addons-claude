@@ -2,6 +2,16 @@
 
 All notable changes to this add-on will be documented in this file.
 
+## [1.7.18] - 2026-01-04
+
+### Added
+- **Custom binaries directory** - `/share/claude-code/bin` is now automatically in PATH
+  - Place executables here and they're available immediately
+  - Persists across container restarts
+- **Alpine packages configuration** - New `packages` option in add-on settings
+  - Install system packages like `ffmpeg`, `python3`, `imagemagick` via UI
+  - Packages are installed on every container start
+
 ## [1.7.17] - 2026-01-04
 
 ### Fixed

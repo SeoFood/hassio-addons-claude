@@ -37,6 +37,7 @@ All persistent data is stored in `/share/claude-code` (Home Assistant's shared s
 - `/share/claude-code/vibe-kanban` → Kanban board data
 - `/share/claude-code/gh-config` → GitHub CLI configuration
 - `/share/claude-code/git-config` → Git global configuration
+- `/share/claude-code/bin` → Custom binaries (automatically in PATH)
 
 This architecture ensures all user data persists across container restarts.
 
@@ -61,6 +62,7 @@ Home Assistant add-on manifest defining:
 - **User Options**:
   - `git_user_name`, `git_user_email` - Git configuration
   - `ssh_public_keys` - List of authorized SSH public keys
+  - `packages` - Alpine packages to install on startup (e.g., `ffmpeg`, `python3`)
   - `marketplaces` - Claude Code plugin marketplaces
   - `plugins` - Claude Code plugins to install
 
