@@ -107,12 +107,15 @@ mkdir -p /home/claude/.ssh
 
 # Add public keys from add-on options
 echo "Adding SSH public keys from add-on options..."
-jq -r '.ssh_public_keys[]?' $CONFIG_PATH 2>/dev/null | while IFS= read -r key || [ -n "$key" ]; do
-    if [ -n "$key" ]; then
+SSH_KEY_COUNT=$(jq -r '.ssh_public_keys | length' $CONFIG_PATH 2>/dev/null || echo "0")
+echo "Found $SSH_KEY_COUNT SSH keys in config"
+for i in $(seq 0 $((SSH_KEY_COUNT - 1))); do
+    key=$(jq -r ".ssh_public_keys[$i]" $CONFIG_PATH 2>/dev/null || true)
+    if [ -n "$key" ] && [ "$key" != "null" ]; then
         echo "$key" >> /home/claude/.ssh/authorized_keys
-        echo "  Added key: ${key:0:30}..."
+        echo "  Added key $((i+1)): ${key:0:30}..."
     fi
-done || true
+done
 echo "SSH keys processing complete"
 
 # Also append keys from persistent storage if exists
