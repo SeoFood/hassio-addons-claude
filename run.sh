@@ -87,6 +87,7 @@ echo "Data directory: $DATA_DIR"
 echo "Configuring SSH server..."
 mkdir -p /etc/ssh
 mkdir -p $DATA_DIR/ssh-host-keys
+mkdir -p /var/run/sshd  # Required for privilege separation
 
 # Generate host keys if they don't exist (persist across restarts)
 if [ ! -f $DATA_DIR/ssh-host-keys/ssh_host_ed25519_key ]; then
@@ -133,8 +134,6 @@ PermitRootLogin no
 PasswordAuthentication no
 PubkeyAuthentication yes
 AuthorizedKeysFile .ssh/authorized_keys
-ChallengeResponseAuthentication no
-UsePAM no
 X11Forwarding no
 PrintMotd no
 AcceptEnv LANG LC_*
@@ -143,7 +142,7 @@ SSHD_CONFIG
 
 # Start SSH server
 echo "Starting SSH server on port 2222..."
-/usr/sbin/sshd
+/usr/sbin/sshd || echo "WARNING: SSH server failed to start"
 
 # Start ttyd web terminal in background (port 7681)
 echo "Starting Web Terminal on port 7681..."
