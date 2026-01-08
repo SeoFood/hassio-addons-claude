@@ -35,8 +35,8 @@ RUN curl -fsSL https://bun.sh/install | bash \
 RUN adduser -D -s /bin/bash -u 1001 claude \
     && echo "claude ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# Install Node tools and pnpm
-RUN npm install -g @anthropic-ai/claude-code vibe-kanban pnpm
+# Install Node tools, pnpm, and TypeScript LSP
+RUN npm install -g @anthropic-ai/claude-code vibe-kanban pnpm typescript typescript-language-server
 
 # Create data directories
 RUN mkdir -p /share/claude-code/workspace /share/claude-code/ssh /share/claude-code/claude-config /share/claude-code/vibe-kanban \

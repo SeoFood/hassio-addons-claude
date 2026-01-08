@@ -2,6 +2,13 @@
 
 All notable changes to this add-on will be documented in this file.
 
+## [1.7.20] - 2026-01-08
+
+### Added
+- **TypeScript Language Server** - Pre-installed `typescript` and `typescript-language-server`
+  - Required by Claude Code 2.1.1+ for TypeScript LSP plugin
+  - Enables code intelligence for TypeScript projects
+
 ## [1.7.19] - 2026-01-04
 
 ### Added
